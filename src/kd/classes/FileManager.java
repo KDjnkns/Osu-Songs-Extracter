@@ -21,7 +21,7 @@ public class FileManager {
 	
 	public void ExtractSongs(String osupath, String userpath, boolean rewrite) throws FileNotFoundException {
 		
-		Thread t = new Thread("Output") {
+		Thread output = new Thread("Output") {
 			
 			public void run() {
 				System.out.println("Rewrite files: " + rewrite);
@@ -89,7 +89,7 @@ public class FileManager {
 				System.out.println("Files were copied!");
 			}
 		};
-		t.start();
+		output.start();
 	}
 	
 	private File getTheBiggestOne(File[] files) {
