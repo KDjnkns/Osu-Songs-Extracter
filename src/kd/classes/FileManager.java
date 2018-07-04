@@ -20,69 +20,76 @@ public class FileManager {
 	}
 	
 	public void ExtractSongs(String osupath, String userpath, boolean rewrite) throws FileNotFoundException {
-		System.out.println("Rewrite files: " + rewrite);
-		if(osupath == null) {
-			System.out.println("Osu! path is not correct!");
-			System.out.println("If you believe, that this is an error, send us a log (More in the 'Info')");
-			return;
-		}
 		
-		if(userpath == null) {
-			System.out.println("Music path is not correct!");
-			System.out.println("If you believe, that this is an error, send us a log (More in the 'Info')");
-			return;
-		}
-		
-		File osufolder = new File(osupath);
-		File musicfolder = new File(userpath);
-		
-		if(!osufolder.exists()) {
-			System.out.println("Osu! folder does not exists!");
-			System.out.println("If you believe, that this is an error, send us a log (More in the 'Info')");
-			return;
-		}
-		if(!musicfolder.exists()) {
-			System.out.println("Music folder does not exists!");
-			System.out.println("If you believe, that this is an error, send us a log (More in the 'Info')");
-			return;
-		}
-		
-		if(!(osufolder.isDirectory()) || !(musicfolder.isDirectory())) {
-			System.out.println("Paths are not correct!");
-			System.out.println("If you believe, that this is an error, send us a log (More in the 'Info')");
-			return;
-		}
-		File bms;
-		File[] folders = osufolder.listFiles();
-		
-		for(File f : folders) {
+		Thread t = new Thread("Output") {
 			
-			File[] songfiles = f.listFiles(new FilenameFilter() {
-			    public boolean accept(File dir, String name) {
-			        return name.endsWith("mp3");
-			    }
-			});
-			
-			System.out.println("Folder: " + f.getName());
-			
-			String musicname = properName(f.getName().split(" "));
-			
-			if(songfiles.length == 0) {
-				System.out.println("  No music files");
-				continue;
-			}
-			
-			bms = getTheBiggestOne(songfiles);
-			System.out.println("  Music file: " + bms.getName());
-			
-			try {
-				copyFile(bms, new File(musicfolder.getAbsolutePath() + "\\" + musicname + ".mp3"), rewrite);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			public void run() {
+				System.out.println("Rewrite files: " + rewrite);
+				if(osupath == null) {
+					System.out.println("Osu! path is not correct!");
+					System.out.println("If you believe, that this is an error, send us a log (More in the 'Info')");
+					return;
+				}
 				
-		}
-		System.out.println("Files were copied!");
+				if(userpath == null) {
+					System.out.println("Music path is not correct!");
+					System.out.println("If you believe, that this is an error, send us a log (More in the 'Info')");
+					return;
+				}
+				
+				File osufolder = new File(osupath);
+				File musicfolder = new File(userpath);
+				
+				if(!osufolder.exists()) {
+					System.out.println("Osu! folder does not exists!");
+					System.out.println("If you believe, that this is an error, send us a log (More in the 'Info')");
+					return;
+				}
+				if(!musicfolder.exists()) {
+					System.out.println("Music folder does not exists!");
+					System.out.println("If you believe, that this is an error, send us a log (More in the 'Info')");
+					return;
+				}
+				
+				if(!(osufolder.isDirectory()) || !(musicfolder.isDirectory())) {
+					System.out.println("Paths are not correct!");
+					System.out.println("If you believe, that this is an error, send us a log (More in the 'Info')");
+					return;
+				}
+				File bms;
+				File[] folders = osufolder.listFiles();
+				
+				for(File f : folders) {
+					
+					File[] songfiles = f.listFiles(new FilenameFilter() {
+					    public boolean accept(File dir, String name) {
+					        return name.endsWith("mp3");
+					    }
+					});
+					
+					System.out.println("Folder: " + f.getName());
+					
+					String musicname = properName(f.getName().split(" "));
+					
+					if(songfiles.length == 0) {
+						System.out.println("  No music files");
+						continue;
+					}
+					
+					bms = getTheBiggestOne(songfiles);
+					System.out.println("  Music file: " + bms.getName());
+					
+					try {
+						copyFile(bms, new File(musicfolder.getAbsolutePath() + "\\" + musicname + ".mp3"), rewrite);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+						
+				}
+				System.out.println("Files were copied!");
+			}
+		};
+		t.start();
 	}
 	
 	private File getTheBiggestOne(File[] files) {
